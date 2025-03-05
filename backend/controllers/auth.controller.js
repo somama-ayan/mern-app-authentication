@@ -3,6 +3,19 @@ import crypto from "crypto"
 import { generateTokenAndSetCookie } from "../utils/genrateTokenAndSetCookie.js"
 import {sendResetSuccessEmail, sendPasswordResetEmail, sendVerificationEmail, sendWelcomeEmail } from "../mailtrap/emails.js"
 import { User } from "../models/user.model.js"
+
+export const checkAuth = async(req, res) => {
+    try {
+        const user = await User.findById(req.userId).select("-password")
+        if(!user) return res.status(400).json({success:false, message: "User Not Found!"})
+
+        res.status(200).json({success: true, user})
+    } catch (error) {
+        console.log("USer Not Found: ", error)
+        res.status(400).json({success:false, message: error.message})
+    }
+}
+
 export const signup = async(req, res) => {
    const {email , password, name} = req.body
    try{
